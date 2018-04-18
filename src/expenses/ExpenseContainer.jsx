@@ -1,25 +1,36 @@
 import React,  { Component, Fragment } from 'react';
+import axios from 'axios';
 import ExpenseForm from './ExpenseForm';
 import ExpenseList from './ExpenseList';
+import Store from '../Store';
 
 class ExpenseContainer extends Component {
 
-	constructor() {
-		super();
-		this.submitExpense = this.submitExpense.bind(this);
+	constructor(props) {
+		super(props);
+		this.createExpense = this.createExpense.bind(this);
+		this._onCreateExpense = Store.addListener('EXPENSE_FORM_CREATE', this.createExpense);
 	}
 
-	submitExpense(event, expense) {
-		console.log(event, expense);
+	async createExpense(expense) {
+		console.log(expense);
+		Store.emit('EXPENSE_FORM_RESET', null);
+		let response = await axios({
+			method: 'post',
+			url: '/api/v1/movement',
+			data: expense
+		});
+		console.log(response.data);
+		Store.emit('EXPENSES_FETCH_DATA', null);
 	}
 
 	render() {
 		return (
 			<Fragment>
 				<h1>Gastos <small>Registre los gastos que hace día a día</small></h1>
-				<ExpenseForm onSubmit={this.submitExpense}></ExpenseForm>
+				<ExpenseForm onSubmit={this.createExpense}></ExpenseForm>
 				<h1>Listado de Gastos<small> No tengas verguenza, ya lo hiciste</small></h1>
-				<ExpenseList a={1}></ExpenseList>
+				<ExpenseList></ExpenseList>
 			</Fragment>
 		)
 	}

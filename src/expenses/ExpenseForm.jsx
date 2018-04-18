@@ -1,22 +1,36 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import Store from '../Store';
 
 class ExpenseForm extends Component {
 
-	constructor() {
-		super();
+	// State Definitions
+	state = {
+		createdAt: '',
+		amount: '',
+		description: '',
+	}
 
-		this.state = {
-			expense: {
-				createdAt: '',
-				amount: '',
-				description: '',
-			},
-		}
+	listeners = []
 
+	constructor(props) {
+		super(props);
+
+		// Bindings
 		this.onSubmit = this.onSubmit.bind(this);
 		this.onChange = this.onChange.bind(this);
+		this.clearForm = this.clearForm.bind(this);
+
+		// Event Listeners
+		this.addListeners();
+	}
+
+	componentWillUnmount() {
+		this.listeners.forEach((l) => Store.removeListener(l));
+	}
+
+	addListeners() {
+		this.listeners.push(Store.addListener('EXPENSE_FORM_RESET', this.clearForm));
 	}
 
 	onChange(event) {
@@ -25,7 +39,15 @@ class ExpenseForm extends Component {
 
 	onSubmit(event) {
 		event.preventDefault();
-		this.props.onSubmit(event);
+		Store.emit('EXPENSE_FORM_CREATE', this.state);
+	}
+
+	clearForm() {
+		this.setState({
+			createdAt: '',
+			amount: '',
+			description: '',
+		});
 	}
 
 	render() {

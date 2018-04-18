@@ -1,26 +1,25 @@
 import React, { Component } from 'react';
+import Store from '../Store';
 import axios from 'axios';
 
 class ExpenseList extends Component {
 
+	state = {
+		isLoading: false,
+		hasFailure: false,
+		expenses: []
+	}
+
 	constructor() {
 		super();
-
-		this.state = {
-			isLoading: false,
-			hasFailure: false,
-			expenses: []
-		}
 		
 		this.fetchData = this.fetchData.bind(this);
+		
+		this._onFetchDate = Store.addListener('EXPENSES_FETCH_DATA', this.fetchData);
 	}
 
 	componentDidMount() {
 		this.fetchData();
-		const _this = this;
-		setTimeout(() => {
-			_this.props.a = 3;
-		})
 	}
 
 	async fetchData() {
@@ -36,8 +35,6 @@ class ExpenseList extends Component {
 	}
 
 	render() {
-
-		console.log(this.props)
 
 		// List Loading
 		if (this.state.isLoading) {
