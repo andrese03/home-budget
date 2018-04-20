@@ -1,61 +1,57 @@
 import React, { Component } from 'react';
-import Store from '../Store';
-import axios from 'axios';
+import PropTypes from 'prop-types';
 
 class ExpenseList extends Component {
 
-	state = {
-		isLoading: false,
-		hasFailure: false,
-		expenses: []
-	}
+	constructor(props) {
+		super(props);
 
-	constructor() {
-		super();
-		
-		this.fetchData = this.fetchData.bind(this);
-		
-		this._onFetchDate = Store.addListener('EXPENSES_FETCH_DATA', this.fetchData);
+		this.onClickExpense = this.onClickExpense.bind(this);
 	}
 
 	componentDidMount() {
-		this.fetchData();
+		this.props.fetchExpenses();
 	}
 
-	async fetchData() {
-		const _this = this;
-
-		_this.setState({isLoading: true});
-
-		let response = await axios.get('http://localhost:3000/api/v1/movements');
-
-		_this.setState({expenses: response.data.payload})
-
-		_this.setState({isLoading: false});
+	onClickExpense(e) {
+		const expense = this.props.expenses.find(ex => ex._id === e.target.id);
+		this.props.selectExpense(expense);
 	}
 
 	render() {
-
 		// List Loading
-		if (this.state.isLoading) {
+		if (this.props.loadingExpenses) {
 			return <p> Loading... </p>
 		}
 
 		// Error
-		if (this.state.hasFailure) {
-			return <p>Sorry! There was an error loading the entries</p>;
+		if (this.props.errorExpenses) {
+			return <p>Sorry! There was an error loading the expenses</p>;
 		}
 
 		// Sucess
 		return (
 			<ul>
-				{this.props.a}
-				{this.state.expenses.map((i, index) => (
-					<li key={index}>Description: {i.description} </li>
+				{this.props.expenses.map((i, index) => (
+					<li key={i._id} id={i._id} onClick={this.onClickExpense} >Description: {i.description} </li>
 				))}
 			</ul>
 		)
 	}
 }
+
+ExpenseList.propTypes = {
+	fetchExpenses: PropTypes.func.isRequired,
+	selectExpense: PropTypes.func.isRequired,
+	expenses: PropTypes.array.isRequired,
+	loadingExpenses: PropTypes.bool,
+	errorExpenses: PropTypes.bool
+}
+
+ExpenseList.defaultProps = {
+	expenses: [],
+	loadingExpenses: true,
+	errorExpenses: false
+};
 
 export default ExpenseList;
