@@ -14,7 +14,7 @@ class ExpenseContainer extends Component {
 			</Fragment>
 		)
 	}
-
+	
 }
 
 export default ExpenseContainer;

@@ -13,8 +13,7 @@ class ExpenseList extends Component {
 		this.props.fetchExpenses();
 	}
 
-	onClickExpense(e) {
-		const expense = this.props.expenses.find(ex => ex._id === e.target.id);
+	onClickExpense(event, expense) {
 		this.props.selectExpense(expense);
 	}
 
@@ -29,13 +28,30 @@ class ExpenseList extends Component {
 			return <p>Sorry! There was an error loading the expenses</p>;
 		}
 
+		if (!this.props.expenses.length) {
+			return <p> There's no expenses </p>
+		}
+
 		// Sucess
 		return (
-			<ul>
+			<table className="table table-striped">
+				<thead>
+					<tr>
+						<th>Descripción</th>
+						<th>Monto</th>
+						<th>Fecha</th>
+					</tr>
+				</thead>
+				<tbody>
 				{this.props.expenses.map((i, index) => (
-					<li key={i._id} id={i._id} onClick={this.onClickExpense} >Description: {i.description} </li>
+					<tr key={i._id} id={i._id} onClick={e => this.onClickExpense(e, i)}>
+						<td>{i.description}</td>
+						<td>{i.amount}</td>
+						<td>{i.createdAt}</td>
+					</tr>
 				))}
-			</ul>
+				</tbody>
+			</table>
 		)
 	}
 }

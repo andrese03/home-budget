@@ -31,7 +31,7 @@ export const fetchExpensesFailure = (error) => ({
 	error
 });
 
-export const fetchExpenses = () => async (dispatch) => {
+export const fetchExpenses = (options) => async (dispatch) => {
 	dispatch(fetchExpensesRequest());
 	try {
 		let result = await axios.get('/api/v1/movements');
